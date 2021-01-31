@@ -11,6 +11,8 @@ import android.content.DialogInterface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ProgressBar;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,6 +26,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     private final List<Data> listIdThreeItems = new ArrayList<>();
     private final List<Data> listIdFourItems = new ArrayList<>();
     private SwipeRefreshLayout swipeRefreshLayout;
+    private ProgressBar progressBar;
 
     private static final String TAG = "MainActivity";
 
@@ -31,6 +34,8 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        progressBar = findViewById(R.id.mainProgressBar);
 
         setUpSwipeRefreshLayout();
 
@@ -51,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     }
 
     private void downloadData(){
+        progressBar.setVisibility(View.VISIBLE);
         DataDownloaderRunnable dataDownloaderRunnable = new DataDownloaderRunnable(this);
         new Thread(dataDownloaderRunnable).start();
     }
@@ -93,6 +99,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     }
 
     public void setUpRecyclerView(){
+        progressBar.setVisibility(View.INVISIBLE);
         RecyclerView mainRecyclerView = findViewById(R.id.mainRecyclerView);
         MainRecyclerAdapter mainRecyclerAdapter = new MainRecyclerAdapter(groupList);
         mainRecyclerView.setAdapter(mainRecyclerAdapter);
@@ -106,6 +113,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     }
 
     public void showErrorDialog(String issue){
+        progressBar.setVisibility(View.INVISIBLE);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Download Failed");
         builder.setMessage(String.format("%s \n Swipe Refresh Later", issue));
