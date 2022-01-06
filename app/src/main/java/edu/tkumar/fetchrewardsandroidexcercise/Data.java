@@ -20,9 +20,9 @@ public class Data implements Comparable<Data> {
         this.id = id;
     }
 
-//    public String getListID() {
-//        return listID;
-//    }
+    public String getListID() {
+        return listID;
+    }
 //
 //    public void setListID(String listID) {
 //        this.listID = listID;

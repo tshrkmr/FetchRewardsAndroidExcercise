@@ -4,7 +4,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -16,16 +15,17 @@ import android.widget.ProgressBar;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener{
+public class MainActivity extends AppCompatActivity{
 
     private final List<GroupData> groupList = new ArrayList<>();
-    private final List<Data> listIdOneItems = new ArrayList<>();
-    private final List<Data> listIdTwoItems = new ArrayList<>();
-    private final List<Data> listIdThreeItems = new ArrayList<>();
-    private final List<Data> listIdFourItems = new ArrayList<>();
-    private SwipeRefreshLayout swipeRefreshLayout;
+//    private final List<Data> listIdOneItems = new ArrayList<>();
+//    private final List<Data> listIdTwoItems = new ArrayList<>();
+//    private final List<Data> listIdThreeItems = new ArrayList<>();
+//    private final List<Data> listIdFourItems = new ArrayList<>();
+//    private SwipeRefreshLayout swipeRefreshLayout;
     private ProgressBar progressBar;
 
     private static final String TAG = "MainActivity";
@@ -37,15 +37,15 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
         progressBar = findViewById(R.id.mainProgressBar);
 
-        setUpSwipeRefreshLayout();
+        //setUpSwipeRefreshLayout();
 
         checkDataConnection();
     }
 
-    private void setUpSwipeRefreshLayout(){
-        swipeRefreshLayout = findViewById(R.id.mainSwipeRefresh);
-        swipeRefreshLayout.setOnRefreshListener(this);
-    }
+//    private void setUpSwipeRefreshLayout(){
+//        swipeRefreshLayout = findViewById(R.id.mainSwipeRefresh);
+//        swipeRefreshLayout.setOnRefreshListener(this);
+//    }
 
     private void checkDataConnection(){
         if(!checkNetworkConnection()){
@@ -61,39 +61,49 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         new Thread(dataDownloaderRunnable).start();
     }
 
-    public void updateListIdOne(Data data){
-        listIdOneItems.add(data);
-        Collections.sort(listIdOneItems);
-    }
+//    public void updateListIdOne(Data data){
+//        listIdOneItems.add(data);
+//        Collections.sort(listIdOneItems);
+//    }
+//
+//    public void updateListIdTwo(Data data){
+//        listIdTwoItems.add(data);
+//        Collections.sort(listIdTwoItems);
+//    }
+//
+//    public void updateListIdThree(Data data){
+//        listIdThreeItems.add(data);
+//        Collections.sort(listIdThreeItems);
+//    }
+//
+//    public void updateListIdFour(Data data){
+//        listIdFourItems.add(data);
+//        Collections.sort(listIdFourItems);
+//    }
 
-    public void updateListIdTwo(Data data){
-        listIdTwoItems.add(data);
-        Collections.sort(listIdTwoItems);
-    }
+    public void updateGroupedData(HashMap<String, ArrayList<Data>> listIdMap){
 
-    public void updateListIdThree(Data data){
-        listIdThreeItems.add(data);
-        Collections.sort(listIdThreeItems);
-    }
+//        String groupNameFour = "4";
+//        groupList.add(new GroupData(groupNameFour, listIdFourItems));
+//
+//        String groupNameTwo = "2";
+//        groupList.add(new GroupData(groupNameTwo, listIdOneItems));
+//
+//        String groupNameOne = "1";
+//        groupList.add(new GroupData(groupNameOne, listIdTwoItems));
+//
+//        String groupNameThree = "3";
+//        groupList.add(new GroupData(groupNameThree, listIdThreeItems));
 
-    public void updateListIdFour(Data data){
-        listIdFourItems.add(data);
-        Collections.sort(listIdFourItems);
-    }
-
-    public void updateGroupedData(){
-
-        String groupNameFour = "4";
-        groupList.add(new GroupData(groupNameFour, listIdFourItems));
-
-        String groupNameTwo = "2";
-        groupList.add(new GroupData(groupNameTwo, listIdOneItems));
-
-        String groupNameOne = "1";
-        groupList.add(new GroupData(groupNameOne, listIdTwoItems));
-
-        String groupNameThree = "3";
-        groupList.add(new GroupData(groupNameThree, listIdThreeItems));
+        ArrayList<Data> mappedData;
+        for(String key : listIdMap.keySet()){
+            //Log.d(TAG, "updateGroupedData: " + key);
+            mappedData = listIdMap.get(key);
+            if(mappedData != null){
+                Collections.sort(mappedData);
+            }
+            groupList.add(new GroupData(key, mappedData));
+        }
 
         Collections.sort(groupList);
     }
@@ -126,9 +136,9 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         dialog.show();
     }
 
-    @Override
-    public void onRefresh() {
-        checkDataConnection();
-        swipeRefreshLayout.setRefreshing(false);
-    }
+//    @Override
+//    public void onRefresh() {
+//        checkDataConnection();
+//        swipeRefreshLayout.setRefreshing(false);
+//    }
 }

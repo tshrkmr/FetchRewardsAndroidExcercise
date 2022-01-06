@@ -11,6 +11,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -66,7 +68,7 @@ public class DataDownloaderRunnable implements Runnable{
                     result.append(line).append("\n");
                 }
             }
-            Log.d(TAG, "run: " + result.toString());
+            //Log.d(TAG, "run: " + result.toString());
             process(result.toString(), error);
         }catch(Exception e){
             e.printStackTrace();
@@ -85,6 +87,10 @@ public class DataDownloaderRunnable implements Runnable{
     }
 
     private void process(String s, boolean error){
+
+        HashMap<String, ArrayList<Data>> listIdMap = new HashMap<>();
+        ArrayList<Data> dataArrayList = new ArrayList<>();
+
         if(error){
             mainActivity.runOnUiThread(()->mainActivity.showErrorDialog(s));
             return;
@@ -95,40 +101,52 @@ public class DataDownloaderRunnable implements Runnable{
             for(int i = 0; i < length; i++) {
                 String id = "";
                 String listId = "";
-                String name = "";
+                String name;
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                 if(jsonObject.has("name")){
                     name = jsonObject.getString("name");
                     if(!(name.equals("null")) && !(name.equals(""))) {
-                        Log.d(TAG, "process: " + name);
+                        //Log.d(TAG, "process: " + name);
                         if(jsonObject.has("id"))
                             id = jsonObject.getString("id");
                         if(jsonObject.has("listId"))
                             listId = jsonObject.getString("listId");
+
                         Data data = new Data(id, listId, name);
-                        switch (listId) {
-                            case "1":
-                                mainActivity.updateListIdOne(data);
-                                break;
-                            case "2":
-                                mainActivity.updateListIdTwo(data);
-                                break;
-                            case "3":
-                                mainActivity.updateListIdThree(data);
-                                break;
-                            case "4":
-                                mainActivity.updateListIdFour(data);
-                                break;
-                        }
+                        dataArrayList.add(data);
+//                        switch (listId) {
+//                            case "1":
+//                                mainActivity.updateListIdOne(data);
+//                                break;
+//                            case "2":
+//                                mainActivity.updateListIdTwo(data);
+//                                break;
+//                            case "3":
+//                                mainActivity.updateListIdThree(data);
+//                                break;
+//                            case "4":
+//                                mainActivity.updateListIdFour(data);
+//                                break;
+//                        }
                     }
                 }
             }
-            mainActivity.updateGroupedData();
-            mainActivity.runOnUiThread(()->mainActivity.setUpRecyclerView());
+
+            for(int i = 0;i<dataArrayList.size();i++){
+                String listId = dataArrayList.get(i).getListID();
+                if(!listIdMap.containsKey(listId)){
+                    listIdMap.put(listId, new ArrayList<>());
+                }
+                ArrayList<Data> lset = listIdMap.get(listId);
+                if(lset != null){
+                    lset.add(dataArrayList.get(i));
+                }
+            }
+
+            mainActivity.updateGroupedData(listIdMap);
+            mainActivity.runOnUiThread(mainActivity::setUpRecyclerView);
         }catch(JSONException e){
             e.printStackTrace();
-        }catch (NullPointerException e){
-
         }
     }
 }
